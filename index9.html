@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Assessment: Crenças Financeiras - ImpulsoCoaching</title>
+
+  <!-- Bibliotecas necessárias -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.4.0/purify.min.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg1: #fdfbf7; 
+      --bg2: #fef3c7; 
+      --surface: #ffffff;
+      --card: #ffffff;
+      --text: #334155;
+      --muted: #64748b;
+      --primary: #ca8a04; 
+      --primary2: #a16207;
+      --accent: #eab308;
+      --success: #2e7d32;
+      --border: #e2e8f0;
+      --shadow: 0 10px 25px rgba(202, 138, 4, .06);
+      --shadow2: 0 4px 12px rgba(202, 138, 4, .04);
+      --radius: 16px;
+      --radius2: 12px;
+      
+      --color-esforco: #ef4444; 
+      --color-desmerecimento: #f59e0b; 
+      --color-consequencias: #8b5cf6; 
+      --color-incompatibilidade: #3b82f6; 
+      --color-padroes: #10b981; 
+      --color-total: #0f172a; 
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0; font-family:'Poppins', system-ui, sans-serif;
+      background: linear-gradient(135deg, var(--bg1), var(--bg2));
+      color:var(--text); line-height:1.6; padding:20px;
+    }
+
+    .container{
+      max-width:900px; margin:0 auto; background: var(--card);
+      border: 1px solid rgba(202,138,4,.15); border-radius:var(--radius);
+      box-shadow:var(--shadow); overflow:hidden; position:relative;
+    }
+    .container::before{
+      content:''; position:absolute; top:0; left:0; right:0; height:6px;
+      background:linear-gradient(90deg, var(--accent), var(--primary));
+    }
+
+    .wrap{ padding:30px; }
+    .header{ text-align:center; padding:10px 0 20px; margin-bottom:10px; }
+    .brand{ margin:0; font-weight:800; letter-spacing:.10em; text-transform:uppercase; color:var(--primary); font-size:13px; }
+    .tagline{ margin:6px auto 0; font-weight:500; color: var(--muted); font-size:14px; max-width: 600px; }
+    .title{ margin:10px 0 0; font-size:32px; line-height:1.2; color:#1b5e20; font-weight:800; }
+
+    .card{ background:var(--card); border:1px solid var(--border); border-radius:var(--radius2); box-shadow:var(--shadow2); padding:20px; }
+    .instructions{ background:#fffbeb; border:1px solid rgba(202,138,4,.2); border-left:5px solid var(--accent); border-radius:var(--radius2); padding:16px 20px; margin:10px 0 24px; color:var(--text); }
+    .instructions p{ margin:0 0 8px; font-size:14.5px; color:#1e293b; }
+    .instructions p:last-child{ margin-bottom:0; }
+
+    .grid-2{ display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+    @media (max-width: 768px){ .wrap{ padding:20px; } .title{ font-size:26px; } .grid-2{ grid-template-columns:1fr; } }
+
+    .form-group label{ display:block; font-weight:700; color:#1b5e20; margin-bottom:8px; font-size:14px; }
+    .form-group input{ width:100%; padding:14px; border:1.5px solid var(--border); border-radius:10px; font-size:15px; background:#fdfcf8; outline:none; transition: all .2s ease; color: #0f172a; }
+    .form-group input:focus{ border-color:var(--accent); background:#fff; box-shadow:0 0 0 4px rgba(202,138,4,.15); }
+    .error{ display:none; margin-top:6px; color:#ef4444; font-size:13px; font-weight:600; }
+
+    .step{ display:none; }
+    .step.active{ display:block; animation: fadeIn 0.4s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .topbar{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between; margin:10px 0 12px; }
+    .counter{ font-weight:800; color:#1b5e20; font-size:14px; }
+    .module-badge{ background: #1e293b; color: #fff; padding: 4px 12px; border-radius: 99px; font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+
+    .progress-bar{ width:100%; background:#e2e8f0; border-radius:999px; overflow:hidden; height:10px; }
+    .progress-fill{ height:100%; width:0%; border-radius:999px; background:linear-gradient(90deg, var(--accent), var(--primary)); transition: width .4s cubic-bezier(0.4, 0, 0.2, 1); }
+
+    .question-title{ margin:0 0 20px; font-size:20px; font-weight:600; color:#0f172a; text-align: center; padding: 10px 0; line-height: 1.4; }
+    .options{ display:flex; flex-direction: column; gap:10px; max-width: 550px; margin: 0 auto; }
+    .opt{ border:1.5px solid var(--border); background:#f8fafc; border-radius:10px; padding:15px 20px; cursor:pointer; user-select:none; transition: all .2s ease; display:flex; align-items:center; justify-content: flex-start; font-weight:600; color:#334155; font-size:15px; }
+    .opt:hover{ transform: translateY(-2px); border-color:var(--accent); background:#fffbeb; }
+    .opt[aria-checked="true"]{ background:linear-gradient(135deg, #0f172a, #1e293b); border-color:#0f172a; color:#fff; box-shadow:0 8px 16px rgba(15,23,42,.2); transform: scale(1.01); }
+
+    .nav{ display:flex; gap:10px; justify-content:space-between; margin-top:30px; flex-wrap:wrap; }
+    .btn{ appearance:none; border:none; cursor:pointer; border-radius:10px; padding:14px 24px; font-size:15px; font-weight:700; transition: all .2s ease; display:inline-flex; align-items:center; justify-content: center; }
+    .btn-primary{ background:linear-gradient(45deg, var(--primary), var(--primary2)); color:#fff; box-shadow:0 6px 14px rgba(202,138,4,.2); }
+    .btn-primary:hover{ transform: translateY(-2px); box-shadow:0 10px 20px rgba(202,138,4,.3); }
+    .btn-ghost{ background:#fff; color:#1b5e20; border:1.5px solid rgba(27,94,32,.3); }
+    .btn-ghost:hover{ background:#f4fbf5; border-color:#1b5e20; }
+    .btn:disabled{ opacity:.5; cursor:not-allowed; transform:none !important; box-shadow:none !important; }
+
+    /* RESULTADOS */
+    .result-hero{ text-align:center; margin-bottom:20px; }
+    .result-hero h2{ margin:0; font-size:26px; font-weight:800; color:#1b5e20; }
+    #score-section { background: #fff; border: 1px solid var(--border); border-radius: var(--radius2); padding: 30px; box-shadow: var(--shadow2); margin-bottom: 24px; }
+    .score-title { font-size: 18px; font-weight: 800; color: #334155; text-transform: uppercase; letter-spacing: .05em; text-align: center; margin-bottom: 24px; }
+    .bar-row { margin-bottom: 20px; }
+    .bar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .bar-label { font-size: 14px; font-weight: 700; color: #1e293b; }
+    .bar-pct { font-size: 14px; font-weight: 800; color: #64748b; }
+    .bar-track { width: 100%; background: #f1f5f9; border-radius: 99px; height: 18px; box-shadow: inset 0 2px 4px rgba(0,0,0,.04); overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 99px; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); }
+    .total-area { margin-top: 30px; padding-top: 24px; border-top: 2px dashed #e2e8f0; }
+    .total-track { height: 26px; }
+    .result-box{ background:#fff; border:1px solid var(--border); padding:20px; border-radius:var(--radius2); box-shadow:var(--shadow2); margin-bottom: 16px; }
+    .result-box h4{ margin:0 0 8px; font-size:16px; font-weight:800; color: #1e293b; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px; }
+    .result-box p{ margin:0; color:#475569; font-size:14px; line-height: 1.6; text-align: justify; }
+    .result-box strong { font-weight: 700; color: #0f172a; }
+    .footer{ margin-top:30px; text-align:center; color:var(--muted); font-size:13px; font-weight:500; }
+    .footer a { color: var(--success); text-decoration: none; font-weight: 600; }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="wrap">
+      <div class="header">
+        <p class="brand">ImpulsoCoaching</p>
+        <h1 class="title">Crenças Financeiras</h1>
+        <p class="tagline">Mapeamento de padrões linguísticos e crenças que bloqueiam seu sucesso e riqueza.</p>
+      </div>
+
+      <!-- PASSO 1: DADOS -->
+      <section id="step-intro" class="step active">
+        <div class="instructions">
+          <p><strong>Bem-vindo(a)!</strong> Responda às afirmações a seguir com intuição e muita sinceridade.</p>
+          <p>Não há respostas certas ou erradas, apenas o diagnóstico do seu padrão mental atual em relação ao dinheiro.</p>
+        </div>
+        <div class="card">
+          <div class="grid-2">
+            <div class="form-group">
+              <label for="name">Nome completo *</label>
+              <input type="text" id="name" placeholder="Ex: João da Silva" />
+              <p id="name-error" class="error">Campo obrigatório.</p>
+            </div>
+            <div class="form-group">
+              <label for="profession">Profissão *</label>
+              <input type="text" id="profession" placeholder="Sua profissão" />
+              <p id="profession-error" class="error">Campo obrigatório.</p>
+            </div>
+          </div>
+          <div class="grid-2" style="margin-top:16px;">
+             <div class="form-group">
+              <label for="age">Idade *</label>
+              <input type="number" id="age" min="10" max="120" placeholder="Sua idade" />
+              <p id="age-error" class="error">Informe uma idade válida.</p>
+            </div>
+            <div class="form-group">
+              <label for="phone">Celular/WhatsApp *</label>
+              <input type="tel" id="phone" placeholder="(11) 99999-9999" />
+              <p id="phone-error" class="error">Campo obrigatório.</p>
+            </div>
+          </div>
+          <div class="grid-2" style="margin-top:16px;">
+            <div class="form-group" style="grid-column: span 2;">
+              <label for="email">E-mail *</label>
+              <input type="email" id="email" placeholder="seu@email.com" />
+              <p id="email-error" class="error">E-mail inválido.</p>
+            </div>
+          </div>
+          <div class="nav" style="justify-content:flex-end">
+            <button id="btn-start" class="btn btn-primary" type="button">Iniciar Mapeamento</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PASSO 2: PERGUNTAS -->
+      <section id="step-quiz" class="step">
+        <div class="topbar">
+          <div class="counter">Pergunta <span id="q-current">1</span> de 20</div>
+          <div class="module-badge" id="module-badge">Módulo X</div>
+        </div>
+        <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
+        <div class="card" style="margin-top:20px;">
+          <h2 id="question-text" class="question-title"></h2>
+          <div id="options" class="options" role="radiogroup"></div>
+          <div class="nav">
+            <button id="btn-prev" class="btn btn-ghost" type="button">Anterior</button>
+            <button id="btn-next" class="btn btn-primary" type="button">Próxima</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PASSO 3: RESULTADOS -->
+      <section id="step-results" class="step">
+        <div class="result-hero">
+          <h2 id="result-title">Seu Mapa de Crenças, <span id="r-name" style="color:var(--primary);"></span></h2>
+          <p style="color:var(--muted); margin:4px 0 0;">Análise do grau de influência das amarras financeiras.</p>
+          <p id="auto-send-status" style="font-size:14px; font-weight:700; color: #2e7d32; margin-top:12px;"></p>
+          <div id="final-success-message" style="display:none; margin-top:14px; background:#f0fdf4; border:1px solid #bbf7d0; padding:16px; border-radius:12px;">
+              <p style="margin:0; font-size:18px; font-weight:800; color:#166534;">✅ Laudo processado e salvo!</p>
+              <p style="margin:6px 0 0; font-size:14px; color:#15803d;">O PDF detalhado foi gerado e enviado para seu e-mail.</p>
+          </div>
+        </div>
+
+        <div id="score-section">
+          <div class="score-title">Índice por Fator Limitante</div>
+          <div id="charts-container"></div>
+          <div class="total-area">
+             <div class="bar-header">
+                <span class="bar-label" style="font-size:16px; text-transform:uppercase;">Grau Total de Limitação</span>
+                <span class="bar-pct" style="font-size:22px; color:#0f172a;" id="total-score-text">0%</span>
+             </div>
+             <div class="bar-track total-track">
+                <div id="total-score-fill" class="bar-fill" style="background:var(--color-total); width:0%;"></div>
+             </div>
+             <p style="text-align:center; font-size:12px; color:#64748b; margin-top:8px;">Quanto maior a porcentagem, maior a urgência de reprogramação mental.</p>
+          </div>
+        </div>
+
+        <h3 style="font-size:20px; font-weight:800; text-align:center; margin-bottom:16px; color:#1e293b;">Diagnóstico Analítico do Perfil:</h3>
+        <div id="dynamic-explanations"></div>
+
+        <div class="footer">
+          <p>Instituto Impulso Coaching de Liderança <br/> <a href="http://www.impulsocoaching.com.br" target="_blank">www.impulsocoaching.com.br</a></p>
+          <p>Rogério Braga - Master Coach</p>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+  // ===============================================
+  // 1. COLE A NOVA URL GERADA NO APPS SCRIPT AQUI 👇
+  // ===============================================
+  const WEB_APP_URL = "COLE_AQUI_A_NOVA_URL_GERADA"; 
+  const API_KEY = "2026Impulso$";
+  const TEST_ID = "crencas_financeiras_v1";
+  
+  let autoSendInProgress = false;
+  let autoSendDone = false;
+  let emailAttempts = 0;
+
+  function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+  function sanitize(str) { return DOMPurify.sanitize(str || ""); }
+  function validEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
+  function validAge(a) { const n=Number(a); return n>=10 && n<=120; }
+
+  const moduleConfig = {
+      esforco: { label: "Esforço e Dificuldade", color: "#ef4444", desc: "Reflete a crença de que a riqueza só vem através de extrema provação e sacrifício." },
+      desmerecimento: { label: "Desmerecimento", color: "#f59e0b", desc: "Mede o sentimento de inadequação e a crença de que a abundância não pertence a você." },
+      consequencias: { label: "Consequências Negativas", color: "#8b5cf6", desc: "Verifica o medo de que ter dinheiro trará problemas, obrigações indesejadas e julgamento." },
+      incompatibilidade: { label: "Incompatibilidade", color: "#3b82f6", desc: "Analisa a falsa ideia de que riqueza exclui paz, tempo livre ou espiritualidade." },
+      padroes: { label: "Linguagem Limitante", color: "#10b981", desc: "Avalia o quanto falas de escassez e vitimismo contaminam sua comunicação diária." }
+  };
+
+  const optCrencas = [
+      { l: "Nada a ver (0 a 2)", v: 0 }, { l: "Acredito pouco (3 a 4)", v: 1 },
+      { l: "Neutro / Indeciso (5 a 6)", v: 2 }, { l: "Acredito muito (7 a 8)", v: 3 }, { l: "Acredito totalmente (9 a 10)", v: 4 }
+  ];
+  const optPadroes = [
+      { l: "Nunca digo isso", v: 0 }, { l: "Raramente digo", v: 1 },
+      { l: "Às vezes", v: 2 }, { l: "Frequente", v: 3 }, { l: "Hábito diário", v: 4 }
+  ];
+
+  const questions = [
+      { mod: "esforco", text: "Ficar milionário exige muita luta e trabalho.", opts: optCrencas },
+      { mod: "esforco", text: "É muito difícil lidar com e ter dinheiro.", opts: optCrencas },
+      { mod: "esforco", text: "Para ganhar dinheiro você tem de se privar das coisas.", opts: optCrencas },
+      { mod: "esforco", text: "Você tem que fazer muitas coisas que não gosta a fim de ter dinheiro.", opts: optCrencas },
+      { mod: "desmerecimento", text: "Os ricos ficam mais ricos e os pobres ficam mais pobres.", opts: optCrencas },
+      { mod: "desmerecimento", text: "Sendo realista, não há possibilidades de eu me tornar rico(a).", opts: optCrencas },
+      { mod: "desmerecimento", text: "Não me vejo 'bom' o suficiente para me tornar rico(a).", opts: optCrencas },
+      { mod: "desmerecimento", text: "Dado o meu contexto e minha educação, é muito difícil ficar rico(a).", opts: optCrencas },
+      { mod: "consequencias", text: "Aceitar dinheiro me obriga a várias coisas e situações embaraçosas.", opts: optCrencas },
+      { mod: "consequencias", text: "Se eu ficar milionário, muitas pessoas vão querer tirar vantagens disso.", opts: optCrencas },
+      { mod: "consequencias", text: "O dinheiro estraga as pessoas.", opts: optCrencas },
+      { mod: "consequencias", text: "Quem busca ganhar dinheiro cai em muitas inquietações.", opts: optCrencas },
+      { mod: "incompatibilidade", text: "Eu não posso ter dinheiro e tempo livre simultaneamente.", opts: optCrencas },
+      { mod: "incompatibilidade", text: "Ter dinheiro impede você de ser feliz.", opts: optCrencas },
+      { mod: "incompatibilidade", text: "Ser milionário me faria menos espiritual/conectado a Deus.", opts: optCrencas },
+      { mod: "incompatibilidade", text: "Ficar rico é apenas uma questão de sorte ou destino.", opts: optCrencas },
+      { mod: "padroes", text: "'Nada dá certo pra mim' ou 'Tudo é mais difícil'?", opts: optPadroes },
+      { mod: "padroes", text: "'A vida não é fácil' ou 'Dinheiro não dá em árvore'?", opts: optPadroes },
+      { mod: "padroes", text: "'Não sou bom o suficiente' ou 'Não vou conseguir'?", opts: optPadroes },
+      { mod: "padroes", text: "'Sou pobre e limitado' ou 'Nunca vou realizar meus sonhos'?", opts: optPadroes }
+  ];
+
+  let currentIndex = 0;
+  let answers = new Array(questions.length).fill(null);
+  let globalPayload = null;
+
+  const stepIntro = document.getElementById('step-intro');
+  const stepQuiz = document.getElementById('step-quiz');
+  const stepResults = document.getElementById('step-results');
+  
+  const elName = document.getElementById('name');
+  const elProf = document.getElementById('profession');
+  const elAge = document.getElementById('age');
+  const elPhone = document.getElementById('phone');
+  const elEmail = document.getElementById('email');
+
+  function validateIntro(){
+      const okN = !!elName.value.trim();
+      const okP = !!elProf.value.trim();
+      const okA = validAge(elAge.value);
+      const okT = !!elPhone.value.trim();
+      const okE = validEmail(elEmail.value.trim());
+
+      document.getElementById('name-error').style.display = okN ? "none" : "block";
+      document.getElementById('profession-error').style.display = okP ? "none" : "block";
+      document.getElementById('age-error').style.display = okA ? "none" : "block";
+      document.getElementById('phone-error').style.display = okT ? "none" : "block";
+      document.getElementById('email-error').style.display = okE ? "none" : "block";
+
+      return okN && okP && okA && okT && okE;
+  }
+
+  document.getElementById('btn-start').addEventListener('click', () => {
+      if(!validateIntro()) return;
+      stepIntro.classList.remove('active');
+      stepQuiz.classList.add('active');
+      window.scrollTo(0,0);
+      renderQuestion();
+  });
+
+  function renderQuestion(){
+      const q = questions[currentIndex];
+      const mod = moduleConfig[q.mod];
+      
+      document.getElementById('q-current').textContent = currentIndex + 1;
+      document.getElementById('module-badge').textContent = mod.label;
+      document.getElementById('module-badge').style.background = mod.color;
+      
+      const pct = (currentIndex / questions.length) * 100;
+      document.getElementById('progress-fill').style.width = `${pct}%`;
+      document.getElementById('question-text').textContent = q.text;
+      
+      const optsDiv = document.getElementById('options');
+      optsDiv.innerHTML = "";
+      
+      q.opts.forEach(opt => {
+          const div = document.createElement('div');
+          div.className = "opt";
+          div.setAttribute("role", "radio");
+          div.setAttribute("aria-checked", answers[currentIndex] === opt.v ? "true" : "false");
+          div.textContent = opt.l;
+          
+          div.addEventListener('click', () => {
+              answers[currentIndex] = opt.v;
+              Array.from(optsDiv.children).forEach(c => c.setAttribute("aria-checked", "false"));
+              div.setAttribute("aria-checked", "true");
+              setTimeout(() => { document.getElementById('btn-next').click(); }, 300);
+          });
+          optsDiv.appendChild(div);
+      });
+      
+      document.getElementById('btn-prev').disabled = currentIndex === 0;
+      document.getElementById('btn-next').textContent = currentIndex === questions.length-1 ? "Ver Resultado" : "Próxima";
+  }
+
+  document.getElementById('btn-prev').addEventListener('click', () => { if(currentIndex > 0) { currentIndex--; renderQuestion(); } });
+  document.getElementById('btn-next').addEventListener('click', () => {
+      if(answers[currentIndex] === null){ alert("Selecione uma opção."); return; }
+      if(currentIndex < questions.length - 1){ currentIndex++; renderQuestion(); } else { finishQuiz(); }
+  });
+
+  function finishQuiz(){
+      stepQuiz.classList.remove('active');
+      stepResults.classList.add('active');
+      window.scrollTo(0,0);
+      document.getElementById('r-name').textContent = sanitize(elName.value).split(' ')[0];
+
+      let scores = {}; Object.keys(moduleConfig).forEach(k => scores[k] = 0);
+      let totalPts = 0;
+
+      answers.forEach((val, i) => { scores[questions[i].mod] += val; totalPts += val; });
+
+      const maxPerMod = 16;
+      const maxTotal = questions.length * 4;
+      const chartsDiv = document.getElementById('charts-container');
+      const explainDiv = document.getElementById('dynamic-explanations');
+      chartsDiv.innerHTML = ""; explainDiv.innerHTML = "";
+      
+      let resumoCorpoEmail = "LAUDO DE CRENÇAS:\n\n";
+
+      Object.keys(moduleConfig).forEach(k => {
+          const mod = moduleConfig[k];
+          const pts = scores[k];
+          const pct = Math.round((pts/maxPerMod)*100);
+
+          chartsDiv.insertAdjacentHTML('beforeend', `
+            <div class="bar-row">
+               <div class="bar-header">
+                  <span class="bar-label">${mod.label}</span>
+                  <span class="bar-pct">${pct}%</span>
+               </div>
+               <div class="bar-track">
+                  <div class="bar-fill" style="background:${mod.color}; width:0%;" data-w="${pct}%"></div>
+               </div>
+            </div>
+          `);
+
+          let interp = ""; let rClass = "";
+          if (pct >= 70) { interp="Nível Crítico:"; rClass="color:#dc2626"; }
+          else if (pct >= 40) { interp="Alerta Moderado:"; rClass="color:#ca8a04"; }
+          else { interp="Nível Saudável:"; rClass="color:#16a34a"; }
+
+          explainDiv.insertAdjacentHTML('beforeend', `
+            <div class="result-box" style="border-left: 6px solid ${mod.color}">
+               <h4 style="color:${mod.color}">${mod.label}</h4>
+               <p><strong style="${rClass}">${interp}</strong> ${mod.desc}</p>
+            </div>
+          `);
+          
+          resumoCorpoEmail += `${mod.label}: ${pct}%\n`;
+      });
+
+      const pctTotal = Math.round((totalPts/maxTotal)*100);
+      document.getElementById('total-score-text').textContent = pctTotal + "%";
+      document.getElementById('total-score-fill').setAttribute('data-w', pctTotal + "%");
+      resumoCorpoEmail += `\n>> GRAU TOTAL LIMITANTE: ${pctTotal}% <<`;
+
+      setTimeout(() => { document.querySelectorAll('.bar-fill').forEach(el => { el.style.width = el.getAttribute('data-w'); }); }, 100);
+
+      globalPayload = {
+          nome: sanitize(elName.value),
+          profissao: sanitize(elProf.value),
+          idade: sanitize(elAge.value),
+          telefone: sanitize(elPhone.value),
+          email: sanitize(elEmail.value),
+          resumo: resumoCorpoEmail,
+          pctTotal: pctTotal
+      };
+
+      setTimeout(() => autoSaveAndSend(), 1200);
+  }
+
+  async function autoSaveAndSend() {
+      if(autoSendInProgress || autoSendDone) return;
+      autoSendInProgress = true;
+      
+      const stEl = document.getElementById('auto-send-status');
+      stEl.style.display = "block";
+      stEl.textContent = "⏳ Gerando Laudo Comportamental em PDF...";
+      
+      try {
+          const areaChart = document.getElementById('score-section');
+          const canvas = await html2canvas(areaChart, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
+          const imgChartData = canvas.toDataURL("image/jpeg", 1.0);
+
+          const { jsPDF } = window.jspdf;
+          const doc = new jsPDF("p", "mm", "a4");
+          
+          doc.setFillColor(253, 251, 247);
+          doc.rect(0, 0, 210, 297, "F");
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(22);
+          doc.setTextColor(27, 94, 32); 
+          doc.text("Instituto Impulso Coaching", 20, 18);
+          doc.setFontSize(16);
+          doc.text("Laudo de Crenças Financeiras", 20, 26);
+          
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(10);
+          doc.setTextColor(51, 65, 85);
+          doc.text(`Nome: ${globalPayload.nome}`, 20, 40);
+          doc.text(`Profissão: ${globalPayload.profissao}`, 110, 40);
+          doc.text(`Idade: ${globalPayload.idade}`, 20, 46);
+          doc.text(`WhatsApp: ${globalPayload.telefone}`, 110, 46);
+          doc.text(`E-mail: ${globalPayload.email}`, 20, 52);
+
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(15);
+          doc.setTextColor(15, 23, 42);
+          doc.text(`Índice Geral Limitante: ${globalPayload.pctTotal}%`, 20, 65);
+
+          const imgW = 160;
+          const imgH = (canvas.height * imgW) / canvas.width;
+          doc.addImage(imgChartData, "JPEG", 25, 72, imgW, imgH);
+
+          let yPdf = 72 + imgH + 15;
+          if (yPdf > 250) { doc.addPage(); yPdf = 25; }
+
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(13);
+          doc.setTextColor(27, 94, 32);
+          doc.text('Avaliação Qualitativa dos Módulos:', 20, yPdf);
+          yPdf += 10;
+
+          doc.setFontSize(9.5);
+          const boxes = document.querySelectorAll('#dynamic-explanations .result-box');
+          boxes.forEach((box) => {
+             if (yPdf > 270) { doc.addPage(); yPdf = 25; }
+             const title = box.querySelector('h4').textContent;
+             const text = box.querySelector('p').textContent;
+             
+             doc.setFont("helvetica", "bold");
+             doc.setTextColor(15, 23, 42);
+             doc.text(title, 20, yPdf);
+             yPdf += 5;
+             
+             doc.setFont("helvetica", "normal");
+             doc.setTextColor(60, 70, 80);
+             const lines = doc.splitTextToSize(text, 170);
+             doc.text(lines, 20, yPdf);
+             yPdf += (lines.length * 5) + 6;
+          });
+
+          doc.setFontSize(9);
+          doc.setTextColor(100, 116, 139);
+          doc.text('Instituto Impulso Coaching de Liderança - Rogério Braga Master Coach', 105, 288, { align: 'center' });
+
+          const cName = globalPayload.nome.replace(/\s+/g,"_").replace(/[^a-zA-Z0-9_]/g,"");
+          const fName = `Laudo_Crencas_${cName}.pdf`;
+          const b64 = doc.output("datauristring").split(',')[1];
+
+          stEl.textContent = "🚀 Sincronizando e enviando por e-mail...";
+          
+          const postData = {
+              apiKey: API_KEY,
+              testId: TEST_ID,
+              nomeTeste: "Crenças Limitantes Financeiras",
+              nome: globalPayload.nome,
+              email: globalPayload.email,
+              idade: globalPayload.idade,
+              telefone: globalPayload.telefone, /* AGORA O TELEFONE ESTÁ SENDO ENVIADO! */
+              profissao: globalPayload.profissao,
+              resumo: globalPayload.resumo,
+              pdfFileName: fName,
+              pdfBase64: b64,
+              sendEmail: true
+          };
+
+          await fetch(WEB_APP_URL, {
+              method: "POST", mode: "no-cors",
+              headers: {"Content-Type": "text/plain;charset=utf-8"},
+              body: JSON.stringify(postData)
+          });
+
+          autoSendDone = true;
+          stEl.style.display = "none";
+          document.getElementById('final-success-message').style.display = "block";
+
+      } catch (err) {
+          console.error(err);
+          emailAttempts++;
+          if(emailAttempts < 3){
+             stEl.textContent = `Atenção: Falha de rede. Tentativa ${emailAttempts}/3...`;
+             stEl.style.color = "#dc2626";
+             await wait(3000);
+             autoSendInProgress = false;
+             autoSaveAndSend();
+          } else {
+             stEl.textContent = "Erro crítico. Tire um print e informe impulsoflow@gmail.com";
+          }
+      }
+  }
+  </script>
+</body>
+</html>
