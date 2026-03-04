@@ -263,13 +263,33 @@
   function validEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
   function validAge(a) { const n=Number(a); return n>=10 && n<=120; }
 
-  const moduleConfig = {
-      esforco: { label: "Esforço e Dificuldade", color: "#ef4444", desc: "Reflete a crença de que a riqueza só vem através de extrema provação e sacrifício." },
-      desmerecimento: { label: "Desmerecimento", color: "#f59e0b", desc: "Mede o sentimento de inadequação e a crença de que a abundância não pertence a você." },
-      consequencias: { label: "Consequências Negativas", color: "#8b5cf6", desc: "Verifica o medo de que ter dinheiro trará problemas, obrigações indesejadas e julgamento." },
-      incompatibilidade: { label: "Incompatibilidade", color: "#3b82f6", desc: "Analisa a falsa ideia de que riqueza exclui paz, tempo livre ou espiritualidade." },
-      padroes: { label: "Linguagem Limitante", color: "#10b981", desc: "Avalia o quanto falas de escassez e vitimismo contaminam sua comunicação diária." }
-  };
+const moduleConfig = {
+  esforco: { 
+    label: "Achar que dinheiro é prêmio de sofrimento", 
+    color: "#ef4444", 
+    desc: "Muita gente carrega o peso de que 'pra ganhar tem que ralar muito'. Isso te faz ignorar caminhos mais espertos. O segredo não é só remar forte, é saber navegar." 
+  },
+  desmerecimento: { 
+    label: "Sentir que 'não é pra mim'", 
+    color: "#f59e0b", 
+    desc: "Sabe aquela voz que diz 'quem sou eu pra ter isso'? Ela é a maior ladra de oportunidades. O primeiro passo pra receber é acreditar que você merece o melhor." 
+  },
+  consequencias: { 
+    label: "Receio do 'depois do sucesso'", 
+    color: "#8b5cf6", 
+    desc: "É comum ter medo do que vem depois: inveja, responsabilidade, mudança. Mas a liberdade financeira é uma ferramenta: você é quem decide como usá-la, sem perder sua essência." 
+  },
+  incompatibilidade: { 
+    label: "Achar que dinheiro afasta do que importa", 
+    color: "#3b82f6", 
+    desc: "Dinheiro não é vilão. Ele não rouba seu tempo, sua paz ou sua fé — quem faz isso é a falta de equilíbrio. Dá pra prosperar no material sem falir no emocional." 
+  },
+  padroes: { 
+    label: "O poder (e o perigo) do que você fala", 
+    color: "#10b981", 
+    desc: "Reclamar que 'tudo tá caro' ou 'dinheiro some' vira um ciclo. Sua fala cria sua realidade. Comece a falar de possibilidades e veja como as portas se abrem." 
+  }
+};
 
   const optCrencas = [
       { l: "Nada a ver (0 a 2)", v: 0 }, { l: "Acredito pouco (3 a 4)", v: 1 },
